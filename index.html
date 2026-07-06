@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hero Carousel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .carousel-wrapper {
+      max-width: 1280px;
+      width: 100%;
+      border-radius: 2rem;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      background: #0b0e14;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      min-height: 380px;
+      max-height: 720px;
+      background: #1a1e26;
+      overflow: hidden;
+    }
+
+    .slides-track {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #1f2937;
+    }
+
+    .slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      background: #2d3748;
+      transition: transform 0.4s ease;
+    }
+
+    .slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0.5) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .slide-content {
+      position: absolute;
+      bottom: 12%;
+      left: 6%;
+      right: 6%;
+      z-index: 2;
+      color: #fff;
+      max-width: 680px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .slide-content h2 {
+      font-size: clamp(1.8rem, 6vw, 3.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+      line-height: 1.2;
+    }
+
+    .slide-content p {
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      opacity: 0.9;
+      margin: 0.6rem 0 1.2rem;
+      line-height: 1.5;
+      max-width: 520px;
+    }
+
+    .slide-content .btn {
+      display: inline-block;
+      background: #ffffff;
+      color: #0b0e14;
+      font-weight: 600;
+      padding: 0.8rem 2.2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(2px);
+      background: rgba(255, 255, 255, 0.92);
+      letter-spacing: 0.3px;
+    }
+
+    .slide-content .btn:hover {
+      background: #ffffff;
+      transform: scale(1.03) translateY(-3px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+      border-color: #ffffff;
+    }
+
+    .slide-content .btn:active {
+      transform: scale(0.96);
+    }
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      background: rgba(10, 14, 23, 0.55);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 60px;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .nav-arrow:hover {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transform: translateY(-50%) scale(1.05);
+      color: #fff;
+    }
+
+    .nav-arrow:active {
+      transform: translateY(-50%) scale(0.92);
+    }
+
+    .nav-arrow.prev {
+      left: 1.2rem;
+    }
+
+    .nav-arrow.next {
+      right: 1.2rem;
+    }
+
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1.2rem 0.5rem 1.5rem;
+      background: #0b0e14;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.25);
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      padding: 0;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+    .dot.active {
+      background: #ffffff;
+      width: 32px;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+    }
+
+    .dot:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(1.1);
+    }
+
+    .dot.active:hover {
+      background: #ffffff;
+      transform: scale(1);
+    }
+
+    @media (max-width: 768px) {
+      .slider-container {
+        height: 60vh;
+        min-height: 320px;
+      }
+
+      .slide-content {
+        bottom: 10%;
+        left: 5%;
+        right: 5%;
+      }
+
+      .nav-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+      }
+
+      .nav-arrow.prev {
+        left: 0.6rem;
+      }
+      .nav-arrow.next {
+        right: 0.6rem;
+      }
+
+      .dots-container {
+        gap: 0.5rem;
+        padding: 1rem 0.5rem;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+      }
+      .dot.active {
+        width: 26px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slider-container {
+        height: 50vh;
+        min-height: 280px;
+      }
+
+      .slide-content h2 {
+        font-size: 1.8rem;
+      }
+      .slide-content p {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      .slide-content .btn {
+        padding: 0.6rem 1.6rem;
+        font-size: 0.9rem;
+      }
+      .nav-arrow {
+        width: 34px;
+        height: 34px;
+        font-size: 1.1rem;
+      }
+    }
+
+    .slide-active .slide-content {
+      animation: fadeSlideUp 0.7s ease forwards;
+    }
+
+    @keyframes fadeSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slider-container.paused .nav-arrow {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <div class="slider-container" id="sliderContainer" role="region" aria-label="Image carousel">
+
+      <div class="slides-track" id="slidesTrack">
+        <div class="slide slide-active" data-index="0">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80&auto=format&fit=crop" alt="Mountain lake at sunset" loading="lazy" />
+          <div class="slide-content">
+            <h2>Explore the wild</h2>
+            <p>Discover breathtaking landscapes and remote trails. Adventure awaits.</p>
+            <a href="#" class="btn">Learn More →</a>
+          </div>
+        </div>
+        <div class="slide" data-index="1">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80&auto=format&fit=crop" alt="Beach paradise" loading="lazy" />
+          <div class="slide-content">
+            <h2>Coastal dreams</h2>
+            <p>Relax by the ocean and let the waves guide your next journey.</p>
+            <a href="#" class="btn">Learn More →</a>
+          </div>
+        </div>
+        <div class="slide" data-index="2">
+          <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80&auto=format&fit=crop" alt="Mountain peaks" loading="lazy" />
+          <div class="slide-content">
+            <h2>Peak experience</h2>
+            <p>Conquer new heights and embrace the freedom of the mountains.</p>
+            <a href="#" class="btn">Learn More →</a>
+          </div>
+        </div>
+        <div class="slide" data-index="3">
+          <img src="https://images.unsplash.com/photo-1470071459604-7b6ecf7f3c27?w=1200&q=80&auto=format&fit=crop" alt="Forest canopy" loading="lazy" />
+          <div class="slide-content">
+            <h2>Into the forest</h2>
+            <p>Immerse yourself in the serenity of ancient woodlands.</p>
+            <a href="#" class="btn">Learn More →</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-arrow prev" id="prevBtn" aria-label="Previous slide">❮</button>
+      <button class="nav-arrow next" id="nextBtn" aria-label="Next slide">❯</button>
+    </div>
+
+    <div class="dots-container" id="dotsContainer" role="tablist"></div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      const track = document.getElementById('slidesTrack');
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const dotsContainer = document.getElementById('dotsContainer');
+      const sliderContainer = document.getElementById('sliderContainer');
+
+      const totalSlides = slides.length;
+      let currentIndex = 0;
+      let autoPlayInterval = null;
+      const AUTO_INTERVAL = 3000;
+      let isPaused = false;
+
+      function updateSlidePosition(index) {
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        currentIndex = index;
+
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('slide-active', i === currentIndex);
+        });
+
+        const dotElements = dotsContainer.querySelectorAll('.dot');
+        dotElements.forEach((dot, i) => {
+          dot.classList.toggle('active', i === currentIndex);
+        });
+      }
+
+      function goToSlide(index) {
+        if (index === currentIndex) return;
+        updateSlidePosition(index);
+        resetAutoPlay();
+      }
+
+      function nextSlide() {
+        goToSlide(currentIndex + 1);
+      }
+
+      function prevSlide() {
+        goToSlide(currentIndex - 1);
+      }
+
+      function startAutoPlay() {
+        if (autoPlayInterval) clearInterval(autoPlayInterval);
+        autoPlayInterval = setInterval(nextSlide, AUTO_INTERVAL);
+        isPaused = false;
+        sliderContainer.classList.remove('paused');
+      }
+
+      function stopAutoPlay() {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+          autoPlayInterval = null;
+        }
+        isPaused = true;
+        sliderContainer.classList.add('paused');
+      }
+
+      function resetAutoPlay() {
+        if (!isPaused) {
+          stopAutoPlay();
+          startAutoPlay();
+        } else {
+          if (autoPlayInterval) {
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+          }
+        }
+      }
+
+      function pauseAutoplay() {
+        if (!isPaused) {
+          stopAutoPlay();
+        }
+      }
+
+      function resumeAutoplay() {
+        if (isPaused) {
+          startAutoPlay();
+        }
+      }
+
+      function handleKeydown(e) {
+        const key = e.key;
+        if (key === 'ArrowLeft') {
+          e.preventDefault();
+          prevSlide();
+        } else if (key === 'ArrowRight') {
+          e.preventDefault();
+          nextSlide();
+        }
+      }
+
+      function buildDots() {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('button');
+          dot.className = 'dot' + (i === 0 ? ' active' : '');
+          dot.setAttribute('role', 'tab');
+          dot.setAttribute('aria-label', `Slide ${i + 1}`);
+          dot.dataset.index = i;
+          dot.addEventListener('click', function() {
+            const idx = parseInt(this.dataset.index, 10);
+            if (idx !== currentIndex) {
+              goToSlide(idx);
+            }
+          });
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      let touchStartX = 0;
+      let touchEndX = 0;
+      let isSwiping = false;
+
+      function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        isSwiping = true;
+      }
+
+      function handleTouchEnd(e) {
+        if (!isSwiping) return;
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        const threshold = 40;
+        if (Math.abs(diff) > threshold) {
+          if (diff > 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+        }
+        isSwiping = false;
+      }
+
+      function init() {
+        buildDots();
+        updateSlidePosition(0);
+        startAutoPlay();
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+
+        sliderContainer.addEventListener('mouseenter', pauseAutoplay);
+        sliderContainer.addEventListener('mouseleave', resumeAutoplay);
+
+        document.addEventListener('keydown', handleKeydown);
+
+        sliderContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+        sliderContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+        track.addEventListener('dragstart', (e) => e.preventDefault());
+
+        window.addEventListener('beforeunload', function() {
+          if (autoPlayInterval) clearInterval(autoPlayInterval);
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+</body>
+</html>
